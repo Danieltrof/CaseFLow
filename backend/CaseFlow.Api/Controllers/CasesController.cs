@@ -139,6 +139,23 @@ public class CasesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateCaseStatus(int id, [FromBody] string status)
+    {
+        var caseItem = await _context.Cases.FindAsync(id);
+
+        if (caseItem == null)
+        {
+            return NotFound();
+        }
+
+        caseItem.Status = status;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCase(int id)
     {

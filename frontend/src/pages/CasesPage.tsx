@@ -16,7 +16,7 @@ import {
   Chip,
 } from "@mui/material";
 
-import { getCases, createCase } from "../api/cases";
+import { getCases, createCase, updateCaseStatus } from "../api/cases";
 import { getCustomers } from "../api/customers";
 
 function CasesPage() {
@@ -60,6 +60,14 @@ function CasesPage() {
         dueDate: "",
         customerId: "",
       });
+    },
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: updateCaseStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
   });
 
@@ -184,11 +192,23 @@ function CasesPage() {
               <TableCell>{c.title}</TableCell>
               <TableCell>{c.customerName}</TableCell>
               <TableCell>
-                <Chip
-                  label={c.status}
+                <TextField
+                  select
                   size="small"
-                  color={c.status === "Closed" ? "success" : "default"}
-                />
+                  value={c.status}
+                  onChange={(e) =>
+                    statusMutation.mutate({
+                      id: c.id,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  <MenuItem value="New">New</MenuItem>
+                  <MenuItem value="InProgress">In Progress</MenuItem>
+                  <MenuItem value="Waiting">Waiting</MenuItem>
+                  <MenuItem value="Completed">Completed</MenuItem>
+                  <MenuItem value="Closed">Closed</MenuItem>
+                </TextField>
               </TableCell>
               <TableCell>
                 <Chip

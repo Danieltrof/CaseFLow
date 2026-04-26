@@ -10,3 +10,17 @@ export const createCase = async (data: CreateCaseDto): Promise<Case> => {
   const response = await apiClient.post("/cases", data);
   return response.data;
 };
+
+export const updateCaseStatus = async ({
+  id,
+  status,
+}: {
+  id: number;
+  status: string;
+}): Promise<void> => {
+  await apiClient.patch(`/cases/${id}/status`, status, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
