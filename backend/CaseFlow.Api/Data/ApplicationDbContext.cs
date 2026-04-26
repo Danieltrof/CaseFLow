@@ -13,4 +13,6 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Customer> Customers { get; set; }
+
+    public DbSet<Case> Cases { get; set; }
 }
