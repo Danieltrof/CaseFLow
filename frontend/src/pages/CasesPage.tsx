@@ -4,11 +4,16 @@ import {
   Box,
   Typography,
   Paper,
-  List,
-  ListItem,
   TextField,
   Button,
   MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
 } from "@mui/material";
 
 import { getCases, createCase } from "../api/cases";
@@ -77,7 +82,7 @@ function CasesPage() {
   if (casesError || customersError) return <p>Error loading data</p>;
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
         <Typography variant="h5" gutterBottom>
           Add Case
@@ -150,22 +155,71 @@ function CasesPage() {
       </Paper>
 
       <Paper sx={{ padding: 3 }}>
-        <Typography variant="h4" gutterBottom>
-            Cases
-        </Typography>
+  <Typography variant="h4" gutterBottom>
+    Cases
+  </Typography>
 
-        {[cases].length === 0 ? (
-            <p>No cases yet</p>
-        ) : (
-            <List>
-            {cases.map((c) => (
-                <ListItem key={c.id} sx={{ marginBottom: 1 }}>
-                {c.title} - {c.customerName} ({c.priority})
-                </ListItem>
-            ))}
-            </List>
-        )}
-        </Paper>
+  {cases.length === 0 ? (
+    <Typography color="text.secondary">No cases yet</Typography>
+  ) : (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Title</TableCell>
+            <TableCell>Customer</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Priority</TableCell>
+            <TableCell>Due Date</TableCell>
+            <TableCell>Created</TableCell>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {cases.map((c) => (
+            <TableRow
+              key={c.id}
+              sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}
+            >
+              <TableCell>{c.title}</TableCell>
+              <TableCell>{c.customerName}</TableCell>
+              <TableCell>
+                <Chip
+                  label={c.status}
+                  size="small"
+                  color={c.status === "Closed" ? "success" : "default"}
+                />
+              </TableCell>
+              <TableCell>
+                <Chip
+                  label={c.priority}
+                  size="small"
+                  color={
+                    c.priority === "High"
+                      ? "error"
+                      : c.priority === "Critical"
+                      ? "error"
+                      : c.priority === "Medium"
+                      ? "warning"
+                      : "default"
+                  }
+                />
+              </TableCell>
+              <TableCell>
+                {c.dueDate
+                  ? new Date(c.dueDate).toLocaleDateString()
+                  : "No due date"}
+              </TableCell>
+              <TableCell>
+                {new Date(c.createdAt).toLocaleDateString()}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )}
+</Paper>
     </Box>
   );
 }
