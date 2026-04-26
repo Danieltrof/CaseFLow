@@ -256,6 +256,7 @@ function CasesPage() {
                   <IconButton
                     color="error"
                     onClick={() => setCaseToDelete(c.id)}
+                    disabled={deleteMutation.isPending}
                   >
                     <DeleteIcon />
                   </IconButton>
