@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CaseFlow.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+189d957ad37cedf412d95f481ca9f5d14f410a95")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af9f3f596941b1f4c3fb4654781b3f4fa04f2df1")]
 [assembly: System.Reflection.AssemblyProductAttribute("CaseFlow.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CaseFlow.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,31 +1,171 @@
-import { useQuery } from "@tanstack/react-query";
-import { getCases } from "../api/cases";
-import { Box, Typography, Paper, List, ListItem } from "@mui/material";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Box,
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  TextField,
+  Button,
+  MenuItem,
+} from "@mui/material";
+
+import { getCases, createCase } from "../api/cases";
+import { getCustomers } from "../api/customers";
 
 function CasesPage() {
-  const { data, isLoading, isError } = useQuery({
+  const queryClient = useQueryClient();
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    priority: "Medium",
+    dueDate: "",
+    customerId: "",
+  });
+
+  const {
+    data: cases = [],
+    isLoading: casesLoading,
+    isError: casesError,
+  } = useQuery({
     queryKey: ["cases"],
     queryFn: getCases,
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading cases</p>;
+  const {
+    data: customers = [],
+    isLoading: customersLoading,
+    isError: customersError,
+  } = useQuery({
+    queryKey: ["customers"],
+    queryFn: getCustomers,
+  });
+
+  const mutation = useMutation({
+    mutationFn: createCase,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+
+      setForm({
+        title: "",
+        description: "",
+        priority: "Medium",
+        dueDate: "",
+        customerId: "",
+      });
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!form.customerId) {
+      alert("Please select a customer");
+      return;
+    }
+
+    mutation.mutate({
+      title: form.title,
+      description: form.description,
+      priority: form.priority,
+      dueDate: form.dueDate || undefined,
+      customerId: Number(form.customerId),
+    });
+  };
+
+  if (casesLoading || customersLoading) return <p>Loading...</p>;
+  if (casesError || customersError) return <p>Error loading data</p>;
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Paper sx={{ padding: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Cases
+      <Paper sx={{ padding: 3, marginBottom: 3 }}>
+        <Typography variant="h5" gutterBottom>
+          Add Case
         </Typography>
 
-        <List>
-          {data?.map((c) => (
-            <ListItem key={c.id}>
-              {c.title} - {c.customerName} ({c.priority})
-            </ListItem>
+        <TextField
+          label="Title"
+          fullWidth
+          margin="normal"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+
+        <TextField
+          label="Description"
+          fullWidth
+          multiline
+          rows={3}
+          margin="normal"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+
+        <TextField
+          select
+          label="Priority"
+          fullWidth
+          margin="normal"
+          value={form.priority}
+          onChange={(e) => setForm({ ...form, priority: e.target.value })}
+        >
+          <MenuItem value="Low">Low</MenuItem>
+          <MenuItem value="Medium">Medium</MenuItem>
+          <MenuItem value="High">High</MenuItem>
+          <MenuItem value="Critical">Critical</MenuItem>
+        </TextField>
+
+        <TextField
+          select
+          label="Customer"
+          fullWidth
+          margin="normal"
+          value={form.customerId}
+          onChange={(e) => setForm({ ...form, customerId: e.target.value })}
+        >
+          {customers.map((customer) => (
+            <MenuItem key={customer.id} value={customer.id}>
+              {customer.name} ({customer.companyName})
+            </MenuItem>
           ))}
-        </List>
+        </TextField>
+
+        <TextField
+          label="Due Date"
+          type="date"
+          fullWidth
+          margin="normal"
+          slotProps={{ inputLabel: { shrink: true } }}
+          value={form.dueDate}
+          onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+        />
+
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Creating..." : "Create"}
+        </Button>
       </Paper>
+
+      <Paper sx={{ padding: 3 }}>
+        <Typography variant="h4" gutterBottom>
+            Cases
+        </Typography>
+
+        {[cases].length === 0 ? (
+            <p>No cases yet</p>
+        ) : (
+            <List>
+            {cases.map((c) => (
+                <ListItem key={c.id} sx={{ marginBottom: 1 }}>
+                {c.title} - {c.customerName} ({c.priority})
+                </ListItem>
+            ))}
+            </List>
+        )}
+        </Paper>
     </Box>
   );
 }
