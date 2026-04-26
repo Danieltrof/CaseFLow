@@ -24,3 +24,7 @@ export const updateCaseStatus = async ({
     },
   });
 };
+
+export const deleteCase = async (id: number): Promise<void> => {
+  await apiClient.delete(`/cases/${id}`);
+};

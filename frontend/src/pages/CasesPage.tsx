@@ -14,9 +14,16 @@ import {
   TableHead,
   TableRow,
   Chip,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
-import { getCases, createCase, updateCaseStatus } from "../api/cases";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { getCases, createCase, updateCaseStatus, deleteCase } from "../api/cases";
 import { getCustomers } from "../api/customers";
 
 function CasesPage() {
@@ -29,6 +36,7 @@ function CasesPage() {
     dueDate: "",
     customerId: "",
   });
+  const [caseToDelete, setCaseToDelete] = useState<number | null>(null);
 
   const {
     data: cases = [],
@@ -68,6 +76,15 @@ function CasesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cases"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteCase,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
+      setCaseToDelete(null);
     },
   });
 
@@ -180,6 +197,7 @@ function CasesPage() {
             <TableCell>Priority</TableCell>
             <TableCell>Due Date</TableCell>
             <TableCell>Created</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
 
@@ -233,6 +251,16 @@ function CasesPage() {
               <TableCell>
                 {new Date(c.createdAt).toLocaleDateString()}
               </TableCell>
+              <TableCell>
+                <Tooltip title="Delete case">
+                  <IconButton
+                    color="error"
+                    onClick={() => setCaseToDelete(c.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -240,6 +268,35 @@ function CasesPage() {
     </TableContainer>
   )}
 </Paper>
+<Dialog
+  open={caseToDelete !== null}
+  onClose={() => setCaseToDelete(null)}
+>
+  <DialogTitle>Delete case?</DialogTitle>
+
+  <DialogContent>
+    Are you sure you want to delete this case? This action cannot be undone.
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={() => setCaseToDelete(null)}>
+      Cancel
+    </Button>
+
+    <Button
+      color="error"
+      variant="contained"
+      onClick={() => {
+        if (caseToDelete !== null) {
+          deleteMutation.mutate(caseToDelete);
+        }
+      }}
+      disabled={deleteMutation.isPending}
+    >
+      {deleteMutation.isPending ? "Deleting..." : "Delete"}
+    </Button>
+  </DialogActions>
+</Dialog>
     </Box>
   );
 }
