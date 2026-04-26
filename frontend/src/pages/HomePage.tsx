@@ -1,26 +1,16 @@
-import { useEffect, useState } from "react";
 import { Box, Typography, Paper } from "@mui/material";
-import apiClient from "../api/apiClient";
 
 function HomePage() {
-  const [message, setMessage] = useState("Loading...");
-
-  useEffect(() => {
-    apiClient
-      .get("/test")
-      .then((response) => setMessage(response.data.message))
-      .catch(() => setMessage("Failed to connect to backend"));
-  }, []);
-
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box>
       <Paper sx={{ padding: 3 }}>
         <Typography variant="h4" gutterBottom>
-          CaseFlow
+          Welcome to CaseFlow
         </Typography>
 
-        <Typography variant="body1">
-          {message}
+        <Typography variant="body1" color="text.secondary">
+          CaseFlow is an internal case management system for tracking customers,
+          cases, priorities, and business workflows.
         </Typography>
       </Paper>
     </Box>

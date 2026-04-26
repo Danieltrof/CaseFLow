@@ -34,7 +34,7 @@ function CustomersPage() {
   if (isError) return <p>Error loading customers</p>;
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
         <Typography variant="h5">Add Customer</Typography>
 
