@@ -30,7 +30,7 @@ function MainLayout() {
             to="/"
             selected={location.pathname === "/"}
             >
-            <ListItemText primary="Home" />
+            <ListItemText primary="Dashboard" />
           </ListItemButton>
 
           <ListItemButton sx={{ marginBottom: 1 }}
