@@ -1,10 +1,22 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Box, Drawer, List, ListItemButton, ListItemText, Typography } from "@mui/material";
 
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
+import { useAuth } from "../features/auth/AuthContext";
+
 const drawerWidth = 220;
 
 function MainLayout() {
   const location = useLocation();
+
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -17,6 +29,8 @@ function MainLayout() {
             width: drawerWidth,
             boxSizing: "border-box",
             padding: 2,
+            display: "flex",
+            flexDirection: "column",
           },
         }}
       >
@@ -49,6 +63,25 @@ function MainLayout() {
             <ListItemText primary="Cases" />
           </ListItemButton>
         </List>
+
+        <Box sx={{ marginTop: "auto" }}>
+          <Typography variant="body2" color="text.secondary">
+            {user?.email}
+          </Typography>
+
+          <Typography variant="caption" color="text.secondary">
+            Role: {user?.role}
+          </Typography>
+
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ marginTop: 2 }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </Box>
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1, padding: 3 }}>

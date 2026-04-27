@@ -3,11 +3,13 @@ using CaseFlow.Api.DTOs;
 using CaseFlow.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CaseFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CasesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
